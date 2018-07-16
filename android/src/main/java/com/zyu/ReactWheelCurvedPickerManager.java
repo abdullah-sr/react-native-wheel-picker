@@ -1,94 +1,160 @@
-package com.zyu;
+'use strict';
 
-import android.graphics.Color;
+import React from 'react';
+import PropTypes from 'prop-types'
+import {
+        View,
+        ColorPropType,
+        requireNativeComponent,
+        } from 'react-native';
 
-import com.aigestudio.wheelpicker.core.AbstractWheelPicker;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.SimpleViewManager;
-import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.annotations.ReactProp;
 
-import java.util.ArrayList;
-import java.util.Map;
+        const WheelCurvedPickerNative = requireNativeComponent('WheelCurvedPicker', WheelCurvedPicker);
 
-/**
- * @author <a href="mailto:lesliesam@hotmail.com"> Sam Yu </a>
- */
-public class ReactWheelCurvedPickerManager extends SimpleViewManager<ReactWheelCurvedPicker> {
+class WheelCurvedPicker extends React.Component {
 
-    private static final String REACT_CLASS = "WheelCurvedPicker";
+    propTypes: {
+        ...View.propTypes,
 
-    private static final int DEFAULT_TEXT_SIZE = 25 * 2;
-    private static final int DEFAULT_ITEM_SPACE = 14 * 2;
+                data: PropTypes.array,
 
-    @Override
-    protected ReactWheelCurvedPicker createViewInstance(ThemedReactContext reactContext) {
-        ReactWheelCurvedPicker picker = new ReactWheelCurvedPicker(reactContext);
-        picker.setTextColor(Color.LTGRAY);
-        picker.setCurrentTextColor(Color.WHITE);
-        picker.setTextSize(DEFAULT_TEXT_SIZE);
-        picker.setItemSpace(DEFAULT_ITEM_SPACE);
+                selectedIndex: PropTypes.number,
 
-        return picker;
+                selectTextColor: ColorPropType,
+
+                itemStyle: PropTypes.object, //textColor  textSize
+
+                textSize: PropTypes.number,
+
+                textColor: ColorPropType,
+
+                indicatorStyle: PropTypes.object, //indicatorColor  indicatorSize
+
+                indicatorSize: PropTypes.number,
+
+                indicatorColor: ColorPropType,
+
+                indicator: PropTypes.bool,
+
+                curtain: PropTypes.bool,
+
+                curtainColor: ColorPropType,
+
+                atmospheric: PropTypes.bool,
+
+                curved: PropTypes.bool,
+
+                visibleItemCount: PropTypes.number,
+
+                itemSpace: PropTypes.number,
+
+                onValueChange: PropTypes.func,
+
+                selectedValue: PropTypes.any,
+
     }
 
-    @Override
-    public Map getExportedCustomDirectEventTypeConstants() {
-        return MapBuilder.of(
-                ItemSelectedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onValueChange")
-        );
+    constructor(props){
+        super(props)
+        this.state = this._stateFromProps(props)
+        this._onValueChange = this._onValueChange.bind(this);
+    }
+    static defaultProps = {
+        itemStyle: { color: "white", fontSize: 26 },
+        indicatorStyle: { color: "red", fontSize: 2 },
+        itemSpace: 20,
+    };
+    //
+    // get state() {
+    //     return this._stateFromProps(this.props);
+    // }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState(this._stateFromProps(nextProps));
     }
 
-    @ReactProp(name="data")
-    public void setData(ReactWheelCurvedPicker picker, ReadableArray items) {
-        if (picker != null) {
-            ArrayList<Integer> valueData = new ArrayList<>();
-            ArrayList<String> labelData = new ArrayList<>();
-            for (int i = 0; i < items.size(); i ++) {
-                ReadableMap itemMap = items.getMap(i);
-                valueData.add(itemMap.getInt("value"));
-                labelData.add(itemMap.getString("label"));
+    _stateFromProps(props) {
+        var selectedIndex = 0;
+        var items = [];
+        React.Children.forEach(props.children, function (child, index) {
+            if (child.props.value === props.selectedValue) {
+                selectedIndex = index;
             }
-            picker.setValueData(valueData);
-            picker.setData(labelData);
+            items.push({ value: index, theValue: child.props.value, label: child.props.label });
+        });
+
+        var textSize = props.itemStyle.fontSize
+        var textColor = props.itemStyle.color
+        var selectTextColor = props.selectTextColor
+        var itemSpace = props.itemSpace
+        var indicator = props.indicator
+        var indicatorColor = props.indicatorStyle.color
+        var indicatorSize = props.indicatorStyle.fontSize
+        var curtain = props.curtain
+        var curtainColor = props.curtainColor
+        var atmospheric = props.atmospheric
+        var curved = props.curved
+        var visibleItemCount = props.visibleItemCount
+
+        return {
+                selectedIndex,
+                items,
+                textSize,
+                textColor,
+                selectTextColor,
+                itemSpace,
+                indicator,
+                indicatorColor,
+                indicatorSize,
+                curtain,
+                curtainColor,
+                atmospheric,
+                curved,
+                visibleItemCount
+        };
+    }
+
+    _onValueChange(e) {
+        if (this.props.onValueChange) {
+            var selectedItem = this.state.items[e.nativeEvent.data];
+            !selectedItem && (selectedItem = { theValue: 0 });
+            this.props.onValueChange(selectedItem.theValue);
         }
     }
 
-    @ReactProp(name="selectedIndex")
-    public void setSelectedIndex(ReactWheelCurvedPicker picker, int index) {
-        if (picker != null && picker.getState() == AbstractWheelPicker.SCROLL_STATE_IDLE) {
-            picker.setItemIndex(index);
-            picker.invalidate();
-        }
-    }
-
-    @ReactProp(name="textColor", customType = "Color")
-    public void setTextColor(ReactWheelCurvedPicker picker, Integer color) {
-        if (picker != null) {
-            picker.setCurrentTextColor(color);
-            picker.setTextColor(color);
-        }
-    }
-
-    @ReactProp(name="textSize")
-    public void setTextSize(ReactWheelCurvedPicker picker, int size) {
-        if (picker != null) {
-            picker.setTextSize((int) PixelUtil.toPixelFromDIP(size));
-        }
-    }
-
-    @ReactProp(name="itemSpace")
-    public void setItemSpace(ReactWheelCurvedPicker picker, int space) {
-        if (picker != null) {
-            picker.setItemSpace((int) PixelUtil.toPixelFromDIP(space));
-        }
-    }
-
-    @Override
-    public String getName() {
-        return REACT_CLASS;
+    render() {
+        return <WheelCurvedPickerNative
+        {...this.props}
+        onValueChange={this._onValueChange}
+        data={this.state.items}
+        selectedIndex={parseInt(this.state.selectedIndex)}
+        textColor={this.state.textColor}
+        textSize={this.state.textSize}
+        selectTextColor={this.state.selectTextColor}
+        itemSpace={this.state.itemSpace}
+        indicator={this.state.indicator}
+        indicatorColor={this.state.indicatorColor}
+        indicatorSize={this.state.indicatorSize}
+        curtain={this.state.curtain}
+        atmospheric={this.state.atmospheric}
+        curved={this.state.curved}
+        visibleItemCount={this.state.visibleItemCount}
+                />;
     }
 }
+
+class Item extends React.Component {
+    propTypes: {
+        value: PropTypes.any, // string or integer basically
+                label: PropTypes.string,
+    }
+
+    render() {
+        // These items don't get rendered directly.
+        return null;
+    }
+}
+
+WheelCurvedPicker.Item = Item;
+
+module.exports = WheelCurvedPicker;
