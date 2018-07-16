@@ -27,9 +27,9 @@ public class ReactWheelCurvedPickerManager extends SimpleViewManager<ReactWheelC
     @Override
     protected ReactWheelCurvedPicker createViewInstance(ThemedReactContext reactContext) {
         ReactWheelCurvedPicker picker = new ReactWheelCurvedPicker(reactContext);
-        picker.setItemTextColor(Color.WHITE);
+        picker.setItemTextColor(Color.LTGRAY);
         picker.setItemTextSize(DEFAULT_TEXT_SIZE);
-        picker.setSelectedItemTextColor(Color.LTGRAY);
+        picker.setSelectedItemTextColor(Color.WHITE);
         picker.setItemSpace(DEFAULT_ITEM_SPACE);
         picker.setIndicator(true);
         picker.setIndicatorSize(2);
@@ -155,6 +155,13 @@ public class ReactWheelCurvedPickerManager extends SimpleViewManager<ReactWheelC
     public void setVisibleItemCount(ReactWheelCurvedPicker picker, int num) {
         if (picker != null) {
             picker.setVisibleItemCount(num);
+        }
+    }
+
+    @ReactProp(name="itemAlign")
+    public void setItemAlign(ReactWheelCurvedPicker picker, int num) {
+        if (picker != null) {
+            picker.setItemAlign(num);
         }
     }
 
