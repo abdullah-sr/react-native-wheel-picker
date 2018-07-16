@@ -10,43 +10,22 @@ import {
 class WheelCurvedPicker extends React.Component {
     propTypes: {
         ...View.propTypes,
-
         data: PropTypes.array,
-
         selectedIndex: PropTypes.number,
-
         selectTextColor: ColorPropType,
-
-        itemStyle: PropTypes.object, //textColor  textSize
-
         textSize: PropTypes.number,
-
         textColor: ColorPropType,
-
-        indicatorStyle: PropTypes.object, //indicatorColor  indicatorSize
-
         indicatorSize: PropTypes.number,
-
         indicatorColor: ColorPropType,
-
         indicator: PropTypes.bool,
-
         curtain: PropTypes.bool,
-
         curtainColor: ColorPropType,
-
         atmospheric: PropTypes.bool,
-
         curved: PropTypes.bool,
-
         visibleItemCount: PropTypes.number,
-
         itemSpace: PropTypes.number,
-
         onValueChange: PropTypes.func,
-
         selectedValue: PropTypes.any,
-
     }
 
     constructor(props) {
@@ -54,12 +33,6 @@ class WheelCurvedPicker extends React.Component {
         this.state = this._stateFromProps(props);
         this._onValueChange = this._onValueChange.bind(this);
     }
-
-    static defaultProps = {
-        itemStyle: { color: 'white', fontSize: 26 },
-        indicatorStyle: { color: 'white', fontSize: 2 },
-        itemSpace: 20,
-    };
 
     componentWillReceiveProps(nextProps) {
         this.setState(this._stateFromProps(nextProps));
@@ -75,13 +48,13 @@ class WheelCurvedPicker extends React.Component {
             items.push({ value: index, theValue: child.props.value, label: child.props.label });
         });
 
-        const textSize = props.itemStyle.fontSize;
-        const textColor = props.itemStyle.color;
+        const textSize = props.fontSize;
+        const textColor = props.textColor;
         const selectTextColor = props.selectTextColor;
         const itemSpace = props.itemSpace;
         const indicator = props.indicator;
-        const indicatorColor = props.indicatorStyle.color;
-        const indicatorSize = props.indicatorStyle.fontSize;
+        const indicatorColor = props.color;
+        const indicatorSize = props.fontSize;
         const curtain = props.curtain;
         const curtainColor = props.curtainColor;
         const atmospheric = props.atmospheric;
