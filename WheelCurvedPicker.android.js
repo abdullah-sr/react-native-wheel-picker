@@ -48,7 +48,7 @@ class WheelCurvedPicker extends React.Component {
             items.push({ value: index, theValue: child.props.value, label: child.props.label });
         });
 
-        const textSize = props.fontSize;
+        const textSize = props.textSize;
         const textColor = props.textColor;
         const selectTextColor = props.selectTextColor;
         const itemSpace = props.itemSpace;
